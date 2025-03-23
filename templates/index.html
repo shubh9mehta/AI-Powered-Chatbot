@@ -1,0 +1,206 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IURDC Assistant</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 20px;
+        }
+        .chat-container {
+            width: 50%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px #ddd;
+        }
+        .chat-box {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background: #fff;
+            text-align: left;
+        }
+        .user-input {
+            width: calc(100% - 120px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .send-btn, .clear-btn, .task-btn {
+            padding: 10px 15px;
+            border: none;
+            background: #007bff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .clear-btn {
+            background: #ff4d4d;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="chat-container">
+        <h2>IURDC Assistant</h2>
+        <div class="chat-box" id="chat-box">
+            <p><strong>Bot:</strong> Hello! How can I assist you today?</p>
+        </div>
+        <input type="text" id="user-input" class="user-input" placeholder="Type your request...">
+        <button onclick="sendMessage()" class="send-btn">Send</button>
+        <button onclick="resetChat()" class="clear-btn">Clear Chat</button>
+        <button onclick="presetMessage('Draft an email about upcoming events')" class="task-btn">Draft Email</button>
+        <button onclick="presetMessage('Create a research proposal using IURDC resources')" class="task-btn">Write Proposal</button>
+    </div>
+
+    <script>
+        async function sendMessage() {
+            let userInput = document.getElementById("user-input").value;
+            if (!userInput.trim()) return;
+
+            let chatBox = document.getElementById("chat-box");
+            chatBox.innerHTML += `<p><strong>You:</strong> ${userInput}</p>`;
+
+            document.getElementById("user-input").value = "";
+
+            let response = await fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ question: userInput })
+            });
+
+            let data = await response.json();
+            chatBox.innerHTML += `<p><strong>Bot:</strong> ${data.response}</p>`;
+
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        async function resetChat() {
+            await fetch("/reset", { method: "POST" });
+            document.getElementById("chat-box").innerHTML = `<p><strong>Bot:</strong> Hello! How can I assist you today?</p>`;
+        }
+
+        function presetMessage(text) {
+            document.getElementById("user-input").value = text;
+        }
+    </script>
+
+</body>
+</html>
+ -->
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IURDC Assistant</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            padding: 20px;
+        }
+        .chat-container {
+            width: 50%;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px #ddd;
+        }
+        .chat-box {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background: #fff;
+            text-align: left;
+        }
+        .user-input {
+            width: calc(100% - 120px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .send-btn, .clear-btn, .mode-btn {
+            padding: 10px 15px;
+            border: none;
+            background: #007bff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .clear-btn {
+            background: #ff4d4d;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="chat-container">
+        <h2>IURDC Assistant</h2>
+        <p>🔹 <strong>Current Mode:</strong> <span id="mode-display">General</span></p>
+        <div class="chat-box" id="chat-box">
+            <p><strong>Bot:</strong> Hello! How can I assist you today?</p>
+        </div>
+        <input type="text" id="user-input" class="user-input" placeholder="Type your request...">
+        <button onclick="sendMessage()" class="send-btn">Send</button>
+        <button onclick="resetChat()" class="clear-btn">Clear Chat</button>
+        <button onclick="changeMode('email')" class="mode-btn">Switch to Email Mode</button>
+        <button onclick="changeMode('proposal')" class="mode-btn">Switch to Proposal Mode</button>
+        <button onclick="changeMode('general')" class="mode-btn">Switch to General Mode</button>
+    </div>
+
+    <script>
+        async function sendMessage() {
+            let userInput = document.getElementById("user-input").value;
+            if (!userInput.trim()) return;
+
+            let chatBox = document.getElementById("chat-box");
+            chatBox.innerHTML += `<p><strong>You:</strong> ${userInput}</p>`;
+
+            document.getElementById("user-input").value = "";
+
+            let response = await fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ question: userInput })
+            });
+
+            let data = await response.json();
+            chatBox.innerHTML += `<p><strong>Bot:</strong> ${data.response}</p>`;
+
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        async function resetChat() {
+            await fetch("/reset", { method: "POST" });
+            document.getElementById("chat-box").innerHTML = `<p><strong>Bot:</strong> Hello! How can I assist you today?</p>`;
+        }
+
+        async function changeMode(mode) {
+            let response = await fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ question: `switch to ${mode} mode` })
+            });
+
+            let data = await response.json();
+            document.getElementById("mode-display").innerText = mode.charAt(0).toUpperCase() + mode.slice(1);
+            document.getElementById("chat-box").innerHTML += `<p><strong>Bot:</strong> ${data.response}</p>`;
+        }
+    </script>
+
+</body>
+</html>
+
