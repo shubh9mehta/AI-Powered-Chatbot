@@ -1,138 +1,317 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IURDC Assistant</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f0f2f5;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .chat-container {
-            width: 90%;
-            max-width: 800px;
-            background-color: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-        }
-        h2 {
-            color: #2c3e50;
-            margin-bottom: 5px;
-        }
-        .mode-display {
-            color: #888;
-            margin-bottom: 20px;
-        }
-        .chat-box {
-            height: 400px;
-            overflow-y: auto;
-            border: 1px solid #e0e0e0;
-            padding: 15px;
-            border-radius: 8px;
-            background-color: #fafafa;
-            margin-bottom: 15px;
-        }
-        .chat-box p {
-            margin: 10px 0;
-        }
-        .input-group {
-            display: flex;
-            gap: 10px;
-        }
-        .user-input {
-            flex: 1;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-        .btn {
-            padding: 12px 16px;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-        .send-btn {
-            background-color: #007bff;
-            color: white;
-        }
-        .clear-btn {
-            background-color: #ff4d4d;
-            color: white;
-        }
-        .mode-btn {
-            background-color: #4caf50;
-            color: white;
-            margin-top: 10px;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IURDC Assistant</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f0f2f5;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .chat-container {
+      width: 95%;
+      max-width: 800px;
+      background-color: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    h2 {
+      color: #2c3e50;
+      margin-bottom: 5px;
+      font-size: 1.8rem;
+    }
+
+    .mode-display {
+      color: #888;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+    }
+
+    .chat-box {
+      display: flex;
+      flex-direction: column;
+      height: 50vh;
+      overflow-y: auto;
+      border: 1px solid #e0e0e0;
+      padding: 12px;
+      border-radius: 8px;
+      background-color: #fafafa;
+      margin-bottom: 15px;
+    }
+
+    .chat-message {
+      display: flex;
+      align-items: flex-start;
+      margin: 10px 0;
+    }
+
+    .chat-message.user {
+      justify-content: flex-end;
+    }
+
+    .chat-message.bot {
+      justify-content: flex-start;
+    }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      font-size: 20px;
+      border-radius: 50%;
+      background-color: #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 8px;
+      flex-shrink: 0;
+    }
+
+    .chat-message.user .avatar {
+      order: 2;
+      margin-left: 8px;
+      margin-right: 0;
+    }
+
+    .bubble {
+      max-width: 75%;
+      padding: 10px 14px;
+      border-radius: 16px;
+      line-height: 1.4;
+      word-wrap: break-word;
+      font-size: 0.95rem;
+    }
+
+    .chat-message.user .bubble {
+      background-color: #d6ecff;
+      border-bottom-right-radius: 0;
+    }
+
+    .chat-message.bot .bubble {
+      background-color: #eeeeee;
+      border-bottom-left-radius: 0;
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .user-input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+      resize: vertical;
+      min-height: 40px;
+    }
+
+    .btn {
+      padding: 10px 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    .send-btn {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .clear-btn {
+      background-color: #ff4d4d;
+      color: white;
+    }
+
+    .mode-btn {
+      background-color: #4caf50;
+      color: white;
+      margin-top: 10px;
+    }
+
+    /* Dark mode */
+    body.dark {
+      background-color: #181818;
+      color: #f0f0f0;
+    }
+
+    body.dark .chat-container {
+      background-color: #252525;
+    }
+
+    body.dark .chat-box {
+      background-color: #1f1f1f;
+      color: #f0f0f0;
+    }
+
+    body.dark .user .bubble {
+      background-color: #1a4d7a;
+      color: white;
+    }
+
+    body.dark .bot .bubble {
+      background-color: #3a3a3a;
+      color: white;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      h2 {
+        font-size: 1.4rem;
+      }
+
+      .chat-box {
+        height: 45vh;
+      }
+
+      .btn {
+        width: 100%;
+        font-size: 1rem;
+      }
+
+      .input-group {
+        flex-direction: column;
+      }
+
+      .user-input {
+        width: 100%;
+        font-size: 1rem;
+      }
+
+      .mode-btn {
+        margin-bottom: 6px;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="chat-container">
-        <h2>IURDC Assistant</h2>
-        <p class="mode-display">🔹 <strong>Current Mode:</strong> <span id="mode-display">General</span></p>
-        <div class="chat-box" id="chat-box">
-            <p><strong>Bot:</strong> Hello! How can I assist you today?</p>
-        </div>
-        <div class="input-group">
-            <input type="text" id="user-input" class="user-input" placeholder="Type your request...">
-            <button onclick="sendMessage()" class="btn send-btn">Send</button>
-            <button onclick="resetChat()" class="btn clear-btn">Clear</button>
-        </div>
-        <div>
-            <button onclick="changeMode('email')" class="btn mode-btn">Email Mode</button>
-            <button onclick="changeMode('proposal')" class="btn mode-btn">Proposal Mode</button>
-            <button onclick="changeMode('general')" class="btn mode-btn">General Mode</button>
-        </div>
+  <div class="chat-container">
+    <h2>IURDC Assistant</h2>
+    <p class="mode-display">🔹 <strong>Current Mode:</strong> <span id="mode-display">General</span></p>
+    <div class="chat-box" id="chat-box">
+      <div class="chat-message bot">
+        <div class="avatar">🤖</div>
+        <div class="bubble"><strong>Bot:</strong> Hello! How can I assist you today?</div>
+      </div>
     </div>
+    <div class="input-group">
+      <textarea id="user-input" class="user-input" rows="2" placeholder="Type your request... (Shift+Enter for new line)"></textarea>
+      <button onclick="sendMessage()" class="btn send-btn">Send</button>
+      <button onclick="resetChat()" class="btn clear-btn">Clear</button>
+    </div>
+    <div>
+      <button onclick="changeMode('email')" class="btn mode-btn">Email Mode</button>
+      <button onclick="changeMode('proposal')" class="btn mode-btn">Proposal Mode</button>
+      <button onclick="changeMode('general')" class="btn mode-btn">General Mode</button>
+      <button onclick="toggleDarkMode()" class="btn mode-btn" style="background-color:#333;">🌙 Dark Mode</button>
+    </div>
+  </div>
 
-    <script>
-        async function sendMessage() {
-            const input = document.getElementById("user-input");
-            const userInput = input.value.trim();
-            if (!userInput) return;
+  <script>
+    async function sendMessage() {
+      const input = document.getElementById("user-input");
+      const userInput = input.value.trim();
+      if (!userInput) return;
 
-            const chatBox = document.getElementById("chat-box");
-            chatBox.innerHTML += `<p><strong>You:</strong> ${userInput}</p>`;
-            input.value = "";
+      const chatBox = document.getElementById("chat-box");
 
-            const res = await fetch("/chat", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ question: userInput })
-            });
+      chatBox.innerHTML += `
+        <div class="chat-message user">
+          <div class="bubble"><strong>You:</strong> ${userInput}</div>
+          <div class="avatar">👤</div>
+        </div>
+      `;
 
-            const data = await res.json();
-            chatBox.innerHTML += `<p><strong>Bot:</strong> ${data.response}</p>`;
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
+      chatBox.innerHTML += `
+        <div class="chat-message bot" id="typing-indicator">
+          <div class="avatar">🤖</div>
+          <div class="bubble"><em>Bot is typing...</em></div>
+        </div>
+      `;
 
-        async function resetChat() {
-            await fetch("/reset", { method: "POST" });
-            document.getElementById("chat-box").innerHTML = `<p><strong>Bot:</strong> Hello! How can I assist you today?</p>`;
-        }
+      chatBox.scrollTop = chatBox.scrollHeight;
+      input.value = "";
 
-        async function changeMode(mode) {
-            const res = await fetch("/chat", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ question: `switch to ${mode} mode` })
-            });
+      const res = await fetch("/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: userInput })
+      });
 
-            const data = await res.json();
-            document.getElementById("mode-display").innerText = mode.charAt(0).toUpperCase() + mode.slice(1);
-            document.getElementById("chat-box").innerHTML += `<p><strong>Bot:</strong> ${data.response}</p>`;
-        }
-    </script>
+      const data = await res.json();
+
+      const typingIndicator = document.getElementById("typing-indicator");
+      if (typingIndicator) typingIndicator.remove();
+
+      chatBox.innerHTML += `
+        <div class="chat-message bot">
+          <div class="avatar">🤖</div>
+          <div class="bubble"><strong>Bot:</strong> ${data.response}</div>
+        </div>
+      `;
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    async function resetChat() {
+      await fetch("/reset", { method: "POST" });
+      const chatBox = document.getElementById("chat-box");
+      chatBox.innerHTML = `
+        <div class="chat-message bot">
+          <div class="avatar">🤖</div>
+          <div class="bubble"><strong>Bot:</strong> Hello! How can I assist you today?</div>
+        </div>
+      `;
+    }
+
+    async function changeMode(mode) {
+      const res = await fetch("/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: `switch to ${mode} mode` })
+      });
+
+      const data = await res.json();
+      document.getElementById("mode-display").innerText = mode.charAt(0).toUpperCase() + mode.slice(1);
+
+      document.getElementById("chat-box").innerHTML += `
+        <div class="chat-message bot">
+          <div class="avatar">🤖</div>
+          <div class="bubble"><strong>Bot:</strong> ${data.response}</div>
+        </div>
+      `;
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark");
+    }
+
+    const textarea = document.getElementById("user-input");
+    textarea.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+  </script>
 </body>
 </html>

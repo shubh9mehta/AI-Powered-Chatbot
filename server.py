@@ -60,45 +60,44 @@ def search_knowledge_base(query, top_k=3):
     return results
 
 # Clean and format chatbot response
-
 def format_response_text(text):
-    # Remove unwanted \1 and other stray control characters
     text = re.sub(r"\\1", "", text)
-
-    # Bold formatting: **text** → <strong>text</strong>
     text = re.sub(r"\*\*(.*?)\*\*", r"<strong>\1</strong>", text)
-
-    # Replace line breaks with <br> for HTML readability
     text = text.replace("\n\n", "<br><br>")
     text = text.replace("\n", "<br>")
-
-    # Replace bullet points
-    text = re.sub(r"<br>[\-\*]\s*", r"<br>• ", text)
-    text = re.sub(r"^\s*[\-\*]\s*", r"• ", text)  # beginning of the response
-
+    text = re.sub(r"<br>[-\*]\s*", r"<br>• ", text)
+    text = re.sub(r"^\s*[-\*]\s*", "• ", text)
     return text.strip()
 
+# Extract emails and links from sources
+def extract_contacts_from_sources(results):
+    emails = set()
+    urls = set()
+
+    for text, _ in results:
+        emails.update(re.findall(r"[\w\.-]+@[\w\.-]+", text))
+        urls.update(re.findall(r"https?://\S+", text))
+
+    return list(emails), list(urls)
 
 # Save each chat interaction to logs
 def log_chat_history(user_query, bot_response):
     os.makedirs("logs", exist_ok=True)
 
-    # Use a single file for the session
     if "log_filename" not in session:
         timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
         session["log_filename"] = f"logs/chat_session_{timestamp}.json"
         session["log_data"] = []
 
-    # Append to session log data
     session["log_data"].append({
         "query": user_query,
         "response": bot_response,
         "timestamp": datetime.now().isoformat()
     })
 
-    # Write the entire session history to file
     with open(session["log_filename"], "w", encoding="utf-8") as f:
         json.dump(session["log_data"], f, indent=2, ensure_ascii=False)
+
 # Core function to generate answer from ChatGPT
 def ask_chatgpt(query):
     results = search_knowledge_base(query)
@@ -149,20 +148,30 @@ def ask_chatgpt(query):
         session["last_response"] = reply
 
         formatted = format_response_text(reply)
-        final_response = f"{formatted}<br><br><strong>Sources:</strong> {source_summary}"
+
+        # Extract emails and URLs from sources
+        emails, urls = extract_contacts_from_sources(results)
+        extras = ""
+        if emails or urls:
+            extras += "<br><br><strong>Useful Contacts:</strong>"
+            if emails:
+                extras += "<br>Email(s): " + ", ".join(f'<a href="mailto:{email}">{email}</a>' for email in emails)
+            if urls:
+                extras += "<br>Website(s): " + ", ".join(f'<a href="{url}" target="_blank">{url}</a>' for url in urls)
+
+        final_response = f"{formatted}<br><br><strong>Sources:</strong> {source_summary}{extras}"
         log_chat_history(query, final_response)
 
         return final_response
 
     except openai.OpenAIError as e:
-        return f"❌ <strong>OpenAI API Error:</strong> {str(e)}"
+        return f"\u274c <strong>OpenAI API Error:</strong> {str(e)}"
 
 # Flask routes
 @app.route("/")
 def index():
     session.clear()
     return render_template("index.html")
-
 
 @app.route("/chat", methods=["POST"])
 def chat():
