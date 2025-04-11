@@ -15,6 +15,3 @@ A Flask-based intelligent assistant for Indiana University Research Data Commons
 3. Run `python server.py`
 4. Open `http://localhost:5001` in browser.
 
----
-
-Built with ❤️ for Indiana University.
